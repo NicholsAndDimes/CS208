@@ -105,6 +105,24 @@ router.post("/students", async function (req, res)
             return;
         }
 
+        if (firstName.length > 30)
+        {
+            console.log("Detected a firstName length greater than 30 characters. Throwing an error...");
+
+            // return 422 status code
+            res.status(422).json({"error": "class firstName should be less than 30 characters"});
+            return;
+        }
+
+        if (lastName.length > 50)
+        {
+            console.log("Detected a lastName length greater than 50 characters. Throwing an error...");
+
+            // return 422 status code
+            res.status(422).json({"error": "class lastName should be less than 50 characters"});
+            return;
+        }
+
         let createdStudent = {
             id: null, // will be initialized by the database, after we insert the record
             firstName: firstName,
