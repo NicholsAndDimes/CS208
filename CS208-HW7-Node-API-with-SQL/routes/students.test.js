@@ -156,7 +156,53 @@ describe('REST APIs for students', () =>
 
     describe('PUT /students/:id', () =>
     {
-        // TODO: add your tests
+        test('should return a 400 response when the "birthDate" field is missing in the request', async() =>
+        {
+            const form_data = {
+                firstName: 'Chris',
+                lastName: 'Nichols',
+                // birthDate: '2001-02-03'
+            };
+
+            const response = await request
+                .put('/students/1')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(400);
+        });
+
+        test('should return a 200 response when updating the student with id = 2', async() =>
+        {
+            const form_data = {
+                firstName: 'Chris',
+                lastName: 'Nichols',
+                birthDate: '2001-02-03'
+            };
+
+            const response = await request
+                .put('/students/2')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(200);
+        });
+
+        test('should return a 404 response when updating the class with id = 999 which does not exist', async() =>
+        {
+            const form_data = {
+                firstName: 'Chris',
+                lastName: 'Nichols',
+                birthDate: '2001-02-03'
+            };
+
+            const response = await request
+                .put('/students/999')
+                .type('form')
+                .send(form_data);
+
+            expect(response.status).toBe(404);
+        });
     });
 
     describe('PATCH /students/:id', () =>
@@ -166,6 +212,28 @@ describe('REST APIs for students', () =>
 
     describe('DELETE /students/:id', () =>
     {
-        // TODO: add your tests
+        test('should return a 204 response when deleting the student with id = 6', async() =>
+        {
+            const response = await request.delete('/students/6');
+            expect(response.status).toBe(204);
+        });
+
+        test('should return a 422 response when deleting the student with id = 1 which is referenced from the registered_students table', async() =>
+        {
+            const response = await request.delete('/students/1');
+
+            // class with id = 1 is referenced from the registered_students table and
+            // deleting it will violate the foreign key constraint.
+            // Therefore, if the implementation is correct, the server will
+            // catch the SQL error thrown by the database and
+            // should return a 422 response.
+            expect(response.status).toBe(422);
+        });
+
+        test('should return a 404 response when deleting the student with id = 999 which does not exist', async() =>
+        {
+            const response = await request.delete('/students/999');
+            expect(response.status).toBe(404);
+        });
     });
 });
